@@ -62,10 +62,7 @@ sudo apt-get install ffmpeg
 ```
 
 ### 6. Создай файл .env
-Скопируй `.env.example` в `.env` и добавь свой Telegram Bot Token:
-```bash
-cp .env.example .env
-```
+Создай `.env` и добавь свой Telegram Bot Token
 
 Отредактируй `.env`:
 ```
