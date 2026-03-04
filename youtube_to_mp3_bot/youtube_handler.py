@@ -1,10 +1,29 @@
 """Handler for YouTube video downloads and MP3 conversion"""
 import os
 import logging
+import shutil
 from pathlib import Path
 from yt_dlp import YoutubeDL
 
 logger = logging.getLogger(__name__)
+
+
+def get_ffmpeg_path() -> str:
+    """Find ffmpeg path in the system."""
+    # Try to find ffmpeg
+    ffmpeg_path = shutil.which('ffmpeg')
+    if ffmpeg_path:
+        return ffmpeg_path
+    
+    # Common paths for Linux/Unix
+    common_paths = ['/usr/bin/ffmpeg', '/usr/local/bin/ffmpeg', '/opt/ffmpeg/bin/ffmpeg']
+    for path in common_paths:
+        if os.path.exists(path):
+            return path
+    
+    # If not found, return None (yt-dlp will try to find it)
+    logger.warning("FFmpeg not found in common paths")
+    return None
 
 
 def download_youtube_as_mp3(url: str, output_dir: str = "downloads") -> str:
@@ -23,6 +42,8 @@ def download_youtube_as_mp3(url: str, output_dir: str = "downloads") -> str:
     """
     Path(output_dir).mkdir(exist_ok=True)
     
+    ffmpeg_path = get_ffmpeg_path()
+    
     ydl_opts = {
         'format': 'bestaudio/best',
         'postprocessors': [{
@@ -34,6 +55,10 @@ def download_youtube_as_mp3(url: str, output_dir: str = "downloads") -> str:
         'quiet': False,
         'no_warnings': False,
     }
+    
+    # Add ffmpeg location if found
+    if ffmpeg_path:
+        ydl_opts['ffmpeg_location'] = ffmpeg_path
     
     try:
         with YoutubeDL(ydl_opts) as ydl:
