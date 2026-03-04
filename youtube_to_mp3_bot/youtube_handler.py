@@ -46,6 +46,7 @@ def download_youtube_as_mp3(url: str, output_dir: str = "downloads") -> str:
     
     ydl_opts = {
         'format': 'bestaudio/best',
+        'noplaylist': True,  # Only download single video, not playlist
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
